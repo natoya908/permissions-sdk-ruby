@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Permissions-sdk-ruby by natoya908</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Permissions-sdk-ruby</h1>
+      <h2 class="project-tagline"></h2>
+      <a href="https://github.com/natoya908/permissions-sdk-ruby" class="btn">View on GitHub</a>
+      <a href="https://github.com/natoya908/permissions-sdk-ruby/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/natoya908/permissions-sdk-ruby/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="permissions-sdk" class="anchor" href="#permissions-sdk" aria-hidden="true"><span class="octicon octicon-link"></span></a>Permissions SDK</h1>
+
+<p>The PayPal Permission SDK provides Ruby APIs for developers to request and obtain permissions from merchants and consumers, to execute APIs on behalf of them. The permissions include variety of operations from processing payments to accessing account transaction history.</p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Add this line to your application's Gemfile:</p>
+
+<div class="highlight highlight-ruby"><pre><span class="pl-k">gem</span> <span class="pl-s"><span class="pl-pds">'</span>paypal-sdk-permissions<span class="pl-pds">'</span></span></pre></div>
+
+<p>And then execute:</p>
+
+<div class="highlight highlight-sh"><pre>$ bundle</pre></div>
+
+<p>Or install it yourself as:</p>
+
+<div class="highlight highlight-sh"><pre>$ gem install paypal-sdk-permissions</pre></div>
+
+<h2>
+<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuration</h2>
+
+<p>For Rails application:</p>
+
+<div class="highlight highlight-sh"><pre>rails g paypal:sdk:install</pre></div>
+
+<p>For other ruby application, create a configuration file(<code>config/paypal.yml</code>):</p>
+
+<div class="highlight highlight-yaml"><pre><span class="pl-s"><span class="pl-ent">development:</span> <span class="pl-s">&amp;default</span></span>
+  <span class="pl-s"><span class="pl-ent">username:</span> <span class="pl-s">jb-us-seller_api1.paypal.com</span></span>
+  <span class="pl-s"><span class="pl-ent">password:</span> <span class="pl-s">WX4WTU3S8MY44S7F</span></span>
+  <span class="pl-s"><span class="pl-ent">signature:</span> <span class="pl-s">AFcWxV21C7fd0v3bYYYRCpSSRl31A7yDhhsPUU2XhtMoZXsWHFxu-RWy</span></span>
+  <span class="pl-s"><span class="pl-ent">app_id:</span> <span class="pl-s">APP-80W284485P519543T</span></span>
+  <span class="pl-c1"><span class="pl-ent">http_timeout:</span> 30</span>
+  <span class="pl-s"><span class="pl-ent">mode:</span> <span class="pl-s">sandbox</span></span>
+  <span class="pl-c"># # with certificate</span>
+  <span class="pl-c"># cert_path: "config/cert_key.pem"</span>
+  <span class="pl-c"># # with token authentication</span>
+  <span class="pl-c"># token: ESTy2hio5WJQo1iixkH29I53RJxaS0Gvno1A6.YQXZgktxbY4I2Tdg</span>
+  <span class="pl-c"># token_secret: ZKPhUYuwJwYsfWdzorozWO2U9pI</span>
+  <span class="pl-c"># # with Proxy</span>
+  <span class="pl-c"># http_proxy: http://proxy-ipaddress:3129/</span>
+  <span class="pl-c"># # with device ip address</span>
+  <span class="pl-c"># device_ipaddress: "127.0.0.1"</span>
+<span class="pl-s"><span class="pl-ent">test:</span></span>
+  <span class="pl-s"><span class="pl-ent">&lt;&lt;:</span> <span class="pl-s">*default</span></span>
+<span class="pl-s"><span class="pl-ent">production:</span></span>
+  <span class="pl-s"><span class="pl-ent">&lt;&lt;:</span> <span class="pl-s">*default</span></span>
+  <span class="pl-s"><span class="pl-ent">mode:</span> <span class="pl-s">live</span></span></pre></div>
+
+<p>Load Configurations from specified file:</p>
+
+<div class="highlight highlight-ruby"><pre><span class="pl-c1">PayPal</span>::<span class="pl-c1">SDK</span>::<span class="pl-c1">Core</span>::<span class="pl-c1">Config</span>.load(<span class="pl-s"><span class="pl-pds">'</span>config/paypal.yml<span class="pl-pds">'</span></span>,  <span class="pl-c1">ENV</span>[<span class="pl-s"><span class="pl-pds">'</span>RACK_ENV<span class="pl-pds">'</span></span>] <span class="pl-k">||</span> <span class="pl-s"><span class="pl-pds">'</span>development<span class="pl-pds">'</span></span>)</pre></div>
+
+<h2>
+<a id="example" class="anchor" href="#example" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example</h2>
+
+<p>Request permission:</p>
+
+<div class="highlight highlight-ruby"><pre><span class="pl-k">require</span> <span class="pl-s"><span class="pl-pds">'</span>paypal-sdk-permissions<span class="pl-pds">'</span></span>
+
+<span class="pl-c1">PayPal</span>::<span class="pl-c1">SDK</span>.configure({
+  <span class="pl-c1">:mode</span>      =&gt; <span class="pl-s"><span class="pl-pds">"</span>sandbox<span class="pl-pds">"</span></span>,  <span class="pl-c"># Set "live" for production</span>
+  <span class="pl-c1">:app_id</span>    =&gt; <span class="pl-s"><span class="pl-pds">"</span>APP-80W284485P519543T<span class="pl-pds">"</span></span>,
+  <span class="pl-c1">:username</span>  =&gt; <span class="pl-s"><span class="pl-pds">"</span>jb-us-seller_api1.paypal.com<span class="pl-pds">"</span></span>,
+  <span class="pl-c1">:password</span>  =&gt; <span class="pl-s"><span class="pl-pds">"</span>WX4WTU3S8MY44S7F<span class="pl-pds">"</span></span>,
+  <span class="pl-c1">:signature</span> =&gt; <span class="pl-s"><span class="pl-pds">"</span>AFcWxV21C7fd0v3bYYYRCpSSRl31A7yDhhsPUU2XhtMoZXsWHFxu-RWy<span class="pl-pds">"</span></span> })
+
+<span class="pl-smi">@api</span> <span class="pl-k">=</span> <span class="pl-c1">PayPal</span>::<span class="pl-c1">SDK</span>::<span class="pl-c1">Permissions</span>::<span class="pl-c1">API</span>.<span class="pl-k">new</span>
+
+<span class="pl-c"># Build request object</span>
+<span class="pl-smi">@request_permissions</span> <span class="pl-k">=</span> <span class="pl-smi">@api</span>.build_request_permissions({
+  <span class="pl-c1">:scope</span> =&gt; [<span class="pl-s"><span class="pl-pds">"</span>ACCESS_BASIC_PERSONAL_DATA<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>ACCESS_ADVANCED_PERSONAL_DATA<span class="pl-pds">"</span></span>],
+  <span class="pl-c1">:callback</span> =&gt; <span class="pl-s"><span class="pl-pds">"</span>http://localhost:3000/samples/permissions/get_access_token<span class="pl-pds">"</span></span> })
+
+<span class="pl-c"># Make API call &amp; get response</span>
+<span class="pl-smi">@response</span> <span class="pl-k">=</span> <span class="pl-smi">@api</span>.request_permissions(<span class="pl-smi">@request_permissions</span>)
+
+<span class="pl-c"># Access Response</span>
+<span class="pl-k">if</span> <span class="pl-smi">@response</span>.success?
+  <span class="pl-smi">@response</span>.token
+  <span class="pl-smi">@api</span>.grant_permission_url(<span class="pl-smi">@response</span>) <span class="pl-c"># Redirect url to grant permissions</span>
+<span class="pl-k">else</span>
+  <span class="pl-smi">@response</span>.error
+<span class="pl-k">end</span></pre></div>
+
+<p>Make API call with <code>token</code> and <code>token_secret</code>:</p>
+
+<div class="highlight highlight-ruby"><pre><span class="pl-smi">@api</span> <span class="pl-k">=</span> <span class="pl-c1">PayPal</span>::<span class="pl-c1">SDK</span>::<span class="pl-c1">Permissions</span>::<span class="pl-c1">API</span>.<span class="pl-k">new</span>({
+   <span class="pl-c1">:token</span> =&gt; <span class="pl-s"><span class="pl-pds">"</span>3rMSi3kCmK1Q3.BKxkH29I53R0TRLrSuCO..l8AMOAFM6cQhPTTrfQ<span class="pl-pds">"</span></span>,
+   <span class="pl-c1">:token_secret</span> =&gt; <span class="pl-s"><span class="pl-pds">"</span>RuE1j8RNRlSuL5T-PSSpVWLvOlI<span class="pl-pds">"</span></span> })
+
+<span class="pl-smi">@response</span> <span class="pl-k">=</span> <span class="pl-smi">@api</span>.get_basic_personal_data({
+  <span class="pl-c1">:attributeList</span> =&gt; {
+    <span class="pl-c1">:attribute</span> =&gt; [ <span class="pl-s"><span class="pl-pds">"</span>http://axschema.org/namePerson/first<span class="pl-pds">"</span></span> ] } })</pre></div>
+
+<p>For more samples <a href="https://paypal-sdk-samples.herokuapp.com/permissions/">https://paypal-sdk-samples.herokuapp.com/permissions/</a></p>
+
+<h2>
+<a id="samples-app" class="anchor" href="#samples-app" aria-hidden="true"><span class="octicon octicon-link"></span></a>Samples App</h2>
+
+<p>Add following line in rails <code>Gemfile</code>:</p>
+
+<div class="highlight highlight-ruby"><pre><span class="pl-k">gem</span> <span class="pl-s"><span class="pl-pds">'</span>paypal-sdk-permissions<span class="pl-pds">'</span></span>
+<span class="pl-k">gem</span> <span class="pl-s"><span class="pl-pds">'</span>permissions_samples<span class="pl-pds">'</span></span>, <span class="pl-c1">:git</span> =&gt; <span class="pl-s"><span class="pl-pds">"</span>https://github.com/paypal/permissions-sdk-ruby.git<span class="pl-pds">"</span></span>, <span class="pl-c1">:group</span> =&gt; <span class="pl-c1">:development</span></pre></div>
+
+<p>Configure routes(<code>config/routes.rb</code>):</p>
+
+<div class="highlight highlight-ruby"><pre>mount <span class="pl-c1">PermissionsSamples</span>::<span class="pl-c1">Engine</span> =&gt; <span class="pl-s"><span class="pl-pds">"</span>/samples<span class="pl-pds">"</span></span> <span class="pl-k">if</span> <span class="pl-c1">Rails</span>.env.development?</pre></div>
+
+<p>To get default paypal configuration execute:</p>
+
+<div class="highlight highlight-sh"><pre>rails g paypal:sdk:install</pre></div>
+
+<p>Run <code>rails server</code> and check the samples.</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/natoya908/permissions-sdk-ruby">Permissions-sdk-ruby</a> is maintained by <a href="https://github.com/natoya908">natoya908</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
+
